@@ -1,35 +1,81 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import {Component} from 'react';
 import './App.css';
+import ErrorBoundary from "./src/components/ErrorBoundary.tsx";
+import SearchBar from "./src/components/SearchBar.tsx";
+import Results from "./src/components/Results.tsx";
 
-function App() {
-  const [count, setCount] = useState(0);
+interface Item {
+    id: string;
+    name: string;
+    description: string;
+}
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+interface Props {
+}
+
+interface State {
+    items: Item[];
+    error: Error | null;
+}
+
+class App extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            items: [],
+            error: null,
+        };
+    }
+
+    componentDidMount() {
+        const searchTerm = localStorage.getItem('searchTerm') || '';
+        this.fetchItems(searchTerm);
+    }
+
+    fetchItems = (searchTerm: string) => {
+        const url = 'https://stapi.co/api/v1/rest/animal/search'; // Replace with your actual API endpoint
+        const body = new URLSearchParams();
+        if (searchTerm) {
+            body.append('name', searchTerm);
+        }
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: body.toString(),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                return response.json();
+            })
+            .then(data => this.setState({ items: data.animals }))
+            .catch(error => this.setState({ error }));
+    }
+
+    render() {
+        const { items, error } = this.state;
+
+        return (
+            <ErrorBoundary>
+                <div className="App">
+                    <div style={{ height: '20%', background: '#f0f0f0' }}>
+                        <SearchBar onSearch={this.fetchItems} />
+                    </div>
+                    <div style={{ height: '80%', overflowY: 'scroll' }}>
+                        {error ? (
+                            <p>Error fetching items</p>
+                        ) : (
+                            <Results items={items} />
+                        )}
+                    </div>
+                </div>
+            </ErrorBoundary>
+        );
+    }
 }
 
 export default App;
