@@ -1,6 +1,5 @@
 import {Component} from 'react';
 import './App.css';
-import ErrorBoundary from "./src/components/ErrorBoundary.tsx";
 import SearchBar from "./src/components/SearchBar.tsx";
 import Results from "./src/components/Results.tsx";
 
@@ -33,7 +32,7 @@ class App extends Component<Props, State> {
     }
 
     fetchItems = (searchTerm: string) => {
-        const url = 'https://stapi.co/api/v1/rest/animal/search'; // Replace with your actual API endpoint
+        const url = 'https://stapi.co/api/v1/rest/animal/search';
         const body = new URLSearchParams();
         if (searchTerm) {
             body.append('name', searchTerm);
@@ -59,21 +58,27 @@ class App extends Component<Props, State> {
     render() {
         const { items, error } = this.state;
 
+        if (error) {
+            throw error;
+        }
+
         return (
-            <ErrorBoundary>
-                <div className="App">
-                    <div style={{ height: '20%', background: '#f0f0f0' }}>
-                        <SearchBar onSearch={this.fetchItems} />
-                    </div>
-                    <div style={{ height: '80%', overflowY: 'scroll' }}>
-                        {error ? (
-                            <p>Error fetching items</p>
-                        ) : (
-                            <Results items={items} />
-                        )}
-                    </div>
+            <div className="App">
+                <div style={{height: '20%', background: '#f0f0f0'}}>
+                    <SearchBar onSearch={this.fetchItems}/>
+                    <button onClick={() => {
+                        this.setState({ error: new Error() });
+                    }}>Throw Error
+                    </button>
                 </div>
-            </ErrorBoundary>
+                <div style={{height: '80%', overflowY: 'scroll'}}>
+                    {error ? (
+                        <p>Error fetching items</p>
+                    ) : (
+                        <Results items={items} />
+                    )}
+                </div>
+            </div>
         );
     }
 }
