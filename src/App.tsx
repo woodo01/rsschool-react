@@ -2,11 +2,11 @@ import { Component } from 'react';
 import './App.css';
 import SearchBar from './src/components/SearchBar.tsx';
 import Results from './src/components/Results.tsx';
+import Loader from './src/components/Loader/Loader.tsx';
 
 interface Item {
-  id: string;
+  uid: string;
   name: string;
-  description: string;
 }
 
 interface Props {}
@@ -14,6 +14,7 @@ interface Props {}
 interface State {
   items: Item[];
   error: Error | null;
+  loading: boolean;
 }
 
 class App extends Component<Props, State> {
@@ -22,6 +23,7 @@ class App extends Component<Props, State> {
     this.state = {
       items: [],
       error: null,
+      loading: false,
     };
   }
 
@@ -31,6 +33,7 @@ class App extends Component<Props, State> {
   }
 
   fetchItems = (searchTerm: string) => {
+    this.setState({ loading: true });
     const url = 'https://stapi.co/api/v1/rest/animal/search';
     const body = new URLSearchParams();
     if (searchTerm) {
@@ -51,11 +54,12 @@ class App extends Component<Props, State> {
         return response.json();
       })
       .then((data) => this.setState({ items: data.animals }))
-      .catch((error) => this.setState({ error }));
+      .catch((error) => this.setState({ error }))
+      .finally(() => this.setState({ loading: false }));
   };
 
   render() {
-    const { items, error } = this.state;
+    const { items, error, loading } = this.state;
 
     if (error) {
       throw error;
@@ -74,7 +78,13 @@ class App extends Component<Props, State> {
           </button>
         </div>
         <div style={{ height: '80%', overflowY: 'scroll' }}>
-          {error ? <p>Error fetching items</p> : <Results items={items} />}
+          {error ? (
+            <p>Error fetching items</p>
+          ) : loading ? (
+            <Loader />
+          ) : (
+            <Results items={items} />
+          )}
         </div>
       </div>
     );
