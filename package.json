@@ -10,7 +10,8 @@
     "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx,js,jsx}' --fix",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "husky install"
   },
   "dependencies": {
     "react": "^18.3.1",
