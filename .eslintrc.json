@@ -1,0 +1,42 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        "plugin:prettier/recommended",
+        "prettier",
+        "prettier/@typescript-eslint",
+        "prettier/react"
+    ],
+    "plugins": [
+        "@typescript-eslint",
+        "prettier",
+        "react",
+        "react-compiler"
+    ],
+    "rules": {
+        "@typescript-eslint/no-explicit-any": "error",
+        "prettier/prettier": "error",
+        "react/jsx-uses-react": "error",
+        "react/jsx-uses-vars": "error",
+        "react/react-in-jsx-scope": "error",
+        "react/prop-types": "off",
+        "react/no-unused-state": "error",
+        "react/no-deprecated": "error",
+        "react/no-direct-mutation-state": "error",
+        "react/no-unknown-property": "error",
+        "react/no-unsafe": "error",
+        "react/no-unused-prop-types": "error",
+        "react-compiler/react-compiler": "error"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "env": {
+        "browser": true,
+        "es2021": true
+    }
+}
