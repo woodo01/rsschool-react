@@ -35,9 +35,6 @@ class SearchBar extends Component<Props, State> {
                     onChange={this.handleChange}
                 />
                 <button onClick={this.handleSearch}>Search</button>
-                <button onClick={() => {
-                    throw new Error('Test error thrown');
-                }}>Throw Error</button>
             </div>
         );
     }
