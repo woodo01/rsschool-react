@@ -1,24 +1,12 @@
 import { Component } from 'react';
 import './App.css';
-import SearchBar from './src/components/SearchBar.tsx';
-import Results from './src/components/Results.tsx';
-import Loader from './src/components/Loader/Loader.tsx';
+import SearchBar from './components/SearchBar.tsx';
+import Results from './components/Results.tsx';
+import Loader from './components/Loader/Loader.tsx';
+import { State } from './types/App.ts';
 
-interface Item {
-  uid: string;
-  name: string;
-}
-
-interface Props {}
-
-interface State {
-  items: Item[];
-  error: Error | null;
-  loading: boolean;
-}
-
-class App extends Component<Props, State> {
-  constructor(props: Props) {
+class App extends Component<never, State> {
+  constructor(props: never) {
     super(props);
     this.state = {
       items: [],
@@ -27,35 +15,8 @@ class App extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    const searchTerm = localStorage.getItem('searchTerm') || '';
-    this.fetchItems(searchTerm);
-  }
-
-  fetchItems = (searchTerm: string) => {
-    this.setState({ loading: true });
-    const url = 'https://stapi.co/api/v1/rest/animal/search';
-    const body = new URLSearchParams();
-    if (searchTerm) {
-      body.append('name', searchTerm);
-    }
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: body.toString(),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        return response.json();
-      })
-      .then((data) => this.setState({ items: data.animals }))
-      .catch((error) => this.setState({ error }))
-      .finally(() => this.setState({ loading: false }));
+  onSearch = (state: State) => {
+    this.setState(state);
   };
 
   render() {
@@ -66,9 +27,9 @@ class App extends Component<Props, State> {
     }
 
     return (
-      <div className="App">
-        <div style={{ height: '20%', background: '#f0f0f0' }}>
-          <SearchBar onSearch={this.fetchItems} />
+      <section className="App">
+        <div className="SearchBar">
+          <SearchBar onSearch={this.onSearch} />
           <button
             onClick={() => {
               this.setState({ error: new Error() });
@@ -77,7 +38,7 @@ class App extends Component<Props, State> {
             Throw Error
           </button>
         </div>
-        <div style={{ height: '80%', overflowY: 'scroll' }}>
+        <div className="SearchResult">
           {error ? (
             <p>Error fetching items</p>
           ) : loading ? (
@@ -86,7 +47,7 @@ class App extends Component<Props, State> {
             <Results items={items} />
           )}
         </div>
-      </div>
+      </section>
     );
   }
 }

@@ -4,10 +4,9 @@
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
         "plugin:prettier/recommended",
-        "prettier",
-        "prettier/@typescript-eslint",
-        "prettier/react"
+        "prettier"
     ],
     "plugins": [
         "@typescript-eslint",
@@ -20,7 +19,7 @@
         "prettier/prettier": "error",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
-        "react/react-in-jsx-scope": "error",
+        "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "react/no-unused-state": "error",
         "react/no-deprecated": "error",
