@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Props } from '../types/SearchBar.ts';
-import { useSearchQuery } from '../hooks/useSearchQuery.tsx';
+import { Props } from '../../types/SearchBar.ts';
+import { useSearchQuery } from '../../hooks/useSearchQuery.tsx';
 
 const SearchBar: React.FC<Props> = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useSearchQuery('searchTerm');

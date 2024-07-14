@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import './App.css';
 import { SearchItem } from './types/SearchResult.ts';
 import Loader from './components/Loader/Loader.tsx';
-import SearchResults from './components/SearchResults.tsx';
-import SearchBar from './components/SearchBar.tsx';
+import SearchResults from './components/SearchResults/SearchResults.tsx';
+import SearchBar from './components/SearchBar/SearchBar.tsx';
 import { State } from './types/App.ts';
 
 const App: React.FC = () => {
