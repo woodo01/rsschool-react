@@ -1,5 +1,5 @@
 import React from 'react';
-import { Props } from '../types/SearchResult.ts';
+import { Props } from '../../types/SearchResult.ts';
 
 const SearchResults: React.FC<Props> = ({ items }) => {
   return (
