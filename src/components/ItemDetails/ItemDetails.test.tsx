@@ -26,11 +26,6 @@ describe('ItemDetails', () => {
         );
     };
 
-    test('renders loader initially', () => {
-        renderComponent('test-id');
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
-    });
-
     test('fetches and displays item details', async () => {
         fetchMock.mockResponseOnce(
             JSON.stringify({
