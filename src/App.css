@@ -2,3 +2,13 @@
   font-family: sans-serif;
   text-align: center;
 }
+
+.SearchBar {
+  height: 20%;
+  background: #f0f0f0;
+}
+
+.SearchResult {
+  height: 80%;
+  overflow-y: scroll;
+}
