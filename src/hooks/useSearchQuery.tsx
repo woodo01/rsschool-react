@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 
-export const useSearchQuery = (key: string) => {
-  const [value, setValue] = useState(() => localStorage.getItem(key) || '');
+const useSearchQuery = (key: string) => {
+    const [query, setQuery] = useState<string>(() => {
+        // Get initial value from local storage
+        return localStorage.getItem(key) || '';
+    });
 
-  useEffect(() => {
-    return () => {
-      localStorage.setItem(key, value);
-    };
-  }, [key, value]);
+    useEffect(() => {
+        localStorage.setItem(key, query);
+        // Save query to local storage when unmounting
+        return () => {
+            localStorage.setItem(key, query);
+        };
+    }, [key, query]);
 
-  return [value, setValue] as const;
+    return [query, setQuery] as const;
 };
+
+export default useSearchQuery;

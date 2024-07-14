@@ -1,14 +1,41 @@
+#root {
+    width: 70%;
+}
 .App {
-  font-family: sans-serif;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
-.SearchBar {
-  height: 20%;
-  background: #f0f0f0;
+.SearchBar,
+.Pagination {
+    margin-bottom: 20px;
+}
+
+.Content {
+    display: flex;
+    width: 100%;
+    position: relative;
 }
 
 .SearchResult {
-  height: 80%;
-  overflow-y: scroll;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.ItemDetails {
+    position: absolute;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    background: white;
+    border-left: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.ItemDetails button {
+    display: block;
+    margin-bottom: 20px;
 }
