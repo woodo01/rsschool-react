@@ -1,21 +1,26 @@
-import { Component, ChangeEvent } from 'react';
-import { Props, State } from '../types/SearchBar.ts';
+import React, { useEffect } from 'react';
+import { Props } from '../types/SearchBar.ts';
+import { useSearchQuery } from '../hooks/useSearchQuery.tsx';
 
-class SearchBar extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      searchTerm: localStorage.getItem('searchTerm') || '',
-    };
-  }
+const SearchBar: React.FC<Props> = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useSearchQuery('searchTerm');
 
-  componentDidMount() {
-    const searchTerm = localStorage.getItem('searchTerm') || '';
-    this.fetchItems(searchTerm);
-  }
+  useEffect(() => {
+    fetchItems(searchTerm);
+  }, []);
 
-  fetchItems = (searchTerm: string) => {
-    this.props.onSearch({ items: [], error: null, loading: true });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSearch = () => {
+    const trimmedSearchTerm = searchTerm.trim();
+    localStorage.setItem('searchTerm', trimmedSearchTerm);
+    fetchItems(trimmedSearchTerm);
+  };
+
+  const fetchItems = (searchTerm: string) => {
+    onSearch({ items: [], error: null, loading: true });
     const url = 'https://stapi.co/api/v1/rest/animal/search';
     const body = new URLSearchParams();
     if (searchTerm) {
@@ -36,39 +41,21 @@ class SearchBar extends Component<Props, State> {
         return response.json();
       })
       .then((data) =>
-        this.props.onSearch({
+        onSearch({
           items: data.animals,
           error: null,
           loading: false,
         }),
       )
-      .catch((error) =>
-        this.props.onSearch({ items: [], error, loading: false }),
-      );
+      .catch((error) => onSearch({ items: [], error, loading: false }));
   };
 
-  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: event.target.value });
-  };
-
-  handleSearch = () => {
-    const searchTerm = this.state.searchTerm.trim();
-    localStorage.setItem('searchTerm', searchTerm);
-    this.fetchItems(searchTerm);
-  };
-
-  render() {
-    return (
-      <section>
-        <input
-          type="text"
-          value={this.state.searchTerm}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleSearch}>Search</button>
-      </section>
-    );
-  }
-}
+  return (
+    <div>
+      <input type="text" value={searchTerm} onChange={handleChange} />
+      <button onClick={handleSearch}>Search</button>
+    </div>
+  );
+};
 
 export default SearchBar;
