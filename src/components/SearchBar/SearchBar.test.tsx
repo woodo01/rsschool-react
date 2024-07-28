@@ -1,99 +1,152 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import fetchMock from 'jest-fetch-mock';
+import { Provider } from 'react-redux';
+import configureStore, { MockStore } from 'redux-mock-store';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import SearchBar from './SearchBar';
-import { Props } from '../../types/SearchBar';
+import {
+    setLoading,
+    setSearchItems,
+    setTotalPages,
+} from '../../redux/searchSlice';
+import { useLazyFetchItemsQuery } from '../../redux/apiSlice';
+import useSearchQuery from '../../hooks/useSearchQuery';
 
-fetchMock.enableMocks();
+jest.mock('../../redux/apiSlice', () => ({
+    ...jest.requireActual('../../redux/apiSlice'),
+    useLazyFetchItemsQuery: jest.fn(),
+}));
 
-const mockOnSearch = jest.fn();
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: jest.fn(),
+}));
 
-const renderComponent = (initialEntries = ['/']) => {
-    const props: Props = {
-        onSearch: mockOnSearch,
-        pageNumber: 0,
-    };
+jest.mock('../../hooks/useSearchQuery');
 
-    render(
-        <MemoryRouter initialEntries={initialEntries}>
-            <Routes>
-                <Route path="/" element={<SearchBar {...props} />} />
-            </Routes>
-        </MemoryRouter>,
-    );
-};
+const mockStore = configureStore([]);
+const mockNavigate = jest.fn();
 
-describe('SearchBar', () => {
+describe('SearchBar Component', () => {
+    let store: MockStore;
+
     beforeEach(() => {
-        fetchMock.resetMocks();
-        mockOnSearch.mockClear();
+        store = mockStore({});
+        store.dispatch = jest.fn();
+        (useNavigate as jest.Mock).mockImplementation(() => mockNavigate);
+        (useSearchQuery as jest.Mock).mockReturnValue(['', jest.fn()]);
     });
 
-    test('renders search input and button', () => {
-        renderComponent();
+    test('renders correctly', () => {
+        const fetchItems = jest.fn();
+        (useLazyFetchItemsQuery as jest.Mock).mockReturnValue([
+            fetchItems,
+            { data: null, error: null, isLoading: false },
+        ]);
+        (useSearchQuery as jest.Mock).mockReturnValue(['test', jest.fn()]);
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter>
+                    <SearchBar />
+                </MemoryRouter>
+            </Provider>,
+        );
+
         expect(screen.getByRole('textbox')).toBeInTheDocument();
         expect(
             screen.getByRole('button', { name: /search/i }),
         ).toBeInTheDocument();
     });
 
-    test('updates search term on input change', () => {
-        renderComponent();
-        const input = screen.getByRole('textbox');
-        fireEvent.change(input, { target: { value: 'test search' } });
-        expect(input).toHaveValue('test search');
-    });
+    test('handles input change', () => {
+        const setSearchTerm = jest.fn();
+        (useSearchQuery as jest.Mock).mockReturnValue(['test', setSearchTerm]);
 
-    test('fetches items on component mount based on URL search parameters', async () => {
-        fetchMock.mockResponseOnce(
-            JSON.stringify({
-                animals: [{ name: 'Animal 1' }, { name: 'Animal 2' }],
-                page: { totalPages: 2 },
-            }),
+        render(
+            <Provider store={store}>
+                <MemoryRouter>
+                    <SearchBar />
+                </MemoryRouter>
+            </Provider>,
         );
 
-        renderComponent(['/?page=2']);
-        await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2)); // Called twice on mount due to the duplicate fetchItems call
-        expect(mockOnSearch).toHaveBeenCalledWith({
-            items: [{ name: 'Animal 1' }, { name: 'Animal 2' }],
-            totalPages: 2,
-            error: null,
-            loading: false,
+        const input = screen.getByRole('textbox');
+        fireEvent.change(input, { target: { value: 'new search term' } });
+        expect(setSearchTerm).toHaveBeenCalledWith('new search term');
+    });
+
+    test('fetches items on mount and when location.search changes', async () => {
+        const fetchItems = jest.fn();
+        (useLazyFetchItemsQuery as jest.Mock).mockReturnValue([
+            fetchItems,
+            { data: null, error: null, isLoading: false },
+        ]);
+        (useSearchQuery as jest.Mock).mockReturnValue(['', jest.fn()]);
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/?page=1']}>
+                    <SearchBar />
+                </MemoryRouter>
+            </Provider>,
+        );
+
+        await waitFor(() => {
+            expect(fetchItems).toHaveBeenCalledWith({
+                searchTerm: '',
+                pageNumber: 0,
+            });
         });
     });
 
-    test('fetches items on search button click', async () => {
-        fetchMock.mockResponseOnce(
-            JSON.stringify({
-                animals: [{ name: 'Animal 1' }, { name: 'Animal 2' }],
-                page: { totalPages: 2 },
-            }),
+    test('dispatches actions on data fetch', async () => {
+        const fetchItems = jest.fn();
+        (useLazyFetchItemsQuery as jest.Mock).mockReturnValue([
+            fetchItems,
+            {
+                data: { animals: [], page: { totalPages: 1 } },
+                error: null,
+                isLoading: false,
+            },
+        ]);
+        (useSearchQuery as jest.Mock).mockReturnValue(['', jest.fn()]);
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter>
+                    <SearchBar />
+                </MemoryRouter>
+            </Provider>,
         );
 
-        renderComponent();
-        const input = screen.getByRole('textbox');
-        const button = screen.getByRole('button', { name: /search/i });
+        await waitFor(() => {
+            expect(store.dispatch).toHaveBeenCalledWith(setSearchItems([]));
+            expect(store.dispatch).toHaveBeenCalledWith(setTotalPages(1));
+            expect(store.dispatch).toHaveBeenCalledWith(setLoading(false));
+        });
+    });
 
-        fireEvent.change(input, { target: { value: 'test search' } });
-        fireEvent.click(button);
+    test('handles search button click', () => {
+        const fetchItems = jest.fn();
+        (useLazyFetchItemsQuery as jest.Mock).mockReturnValue([
+            fetchItems,
+            { data: null, error: null, isLoading: false },
+        ]);
+        (useSearchQuery as jest.Mock).mockReturnValue(['test', jest.fn()]);
 
-        await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3)); // Called twice on mount and once on search
-
-        expect(fetchMock).toHaveBeenCalledWith(
-            'https://stapi.co/api/v1/rest/animal/search?pageNumber=0',
-            expect.objectContaining({
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'name=test+search',
-            }),
+        render(
+            <Provider store={store}>
+                <MemoryRouter>
+                    <SearchBar />
+                </MemoryRouter>
+            </Provider>,
         );
-        expect(mockOnSearch).toHaveBeenCalledWith({
-            items: [{ name: 'Animal 1' }, { name: 'Animal 2' }],
-            totalPages: 2,
-            error: null,
-            loading: false,
+
+        fireEvent.click(screen.getByRole('button', { name: /search/i }));
+        expect(mockNavigate).toHaveBeenCalledWith(`/`);
+        expect(fetchItems).toHaveBeenCalledWith({
+            searchTerm: 'test',
+            pageNumber: 0,
         });
     });
 });
