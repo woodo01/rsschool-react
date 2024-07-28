@@ -40,3 +40,34 @@
     display: block;
     margin-bottom: 20px;
 }
+
+/* Light Theme */
+.App.light {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Dark Theme */
+.App.dark {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+/* Additional styles for the ThemeSelector */
+.ThemeSelectorContainer {
+    margin: 20px;
+}
+
+/* Style for ThemeSelector component */
+.ThemeSelector {
+    display: flex;
+    align-items: center;
+}
+
+.ThemeSelector label {
+    margin-right: 10px;
+}
+
+.ThemeSelector select {
+    padding: 5px;
+}
