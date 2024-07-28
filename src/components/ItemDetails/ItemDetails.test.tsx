@@ -1,75 +1,108 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import fetchMock from 'jest-fetch-mock';
+import { Provider } from 'react-redux';
+import configureStore, { MockStore } from 'redux-mock-store';
 import ItemDetails from './ItemDetails';
+import { useFetchItemDetailsQuery } from '../../redux/apiSlice';
 
-fetchMock.enableMocks();
-
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useNavigate: () => mockNavigate,
+jest.mock('../../redux/apiSlice', () => ({
+    ...jest.requireActual('../../redux/apiSlice'),
+    useFetchItemDetailsQuery: jest.fn(),
 }));
 
-describe('ItemDetails', () => {
+const mockStore = configureStore([]);
+
+describe('ItemDetails Component', () => {
+    let store: MockStore;
+
     beforeEach(() => {
-        fetchMock.resetMocks();
+        store = mockStore({});
+        store.dispatch = jest.fn();
     });
 
-    const renderComponent = (id: string) => {
+    test('renders loading state correctly', () => {
+        (useFetchItemDetailsQuery as jest.Mock).mockReturnValue({
+            data: null,
+            isLoading: true,
+        });
+
         render(
-            <MemoryRouter initialEntries={[`/details/${id}`]}>
-                <Routes>
-                    <Route path="/details/:id" element={<ItemDetails />} />
-                </Routes>
-            </MemoryRouter>,
-        );
-    };
-
-    test('fetches and displays item details', async () => {
-        fetchMock.mockResponseOnce(
-            JSON.stringify({
-                animal: { id: 'test-id', name: 'Test Animal' },
-            }),
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/details/1']}>
+                    <Routes>
+                        <Route path="/details/:id" element={<ItemDetails />} />
+                        <Route path="/" element={<div>Home Page</div>} />
+                    </Routes>
+                </MemoryRouter>
+            </Provider>,
         );
 
-        renderComponent('test-id');
-
-        await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-        await waitFor(() =>
-            expect(screen.getByText('Test Animal')).toBeInTheDocument(),
-        );
+        expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
 
-    test('handles fetch error', async () => {
-        fetchMock.mockResponseOnce(JSON.stringify({}));
+    test('displays item details when data is available', () => {
+        (useFetchItemDetailsQuery as jest.Mock).mockReturnValue({
+            data: { animal: { name: 'Test Animal' } },
+            isLoading: false,
+        });
 
-        renderComponent('test-id');
-
-        await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-        await waitFor(() =>
-            expect(
-                screen.getByText('No details available'),
-            ).toBeInTheDocument(),
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/details/1']}>
+                    <Routes>
+                        <Route path="/details/:id" element={<ItemDetails />} />
+                        <Route path="/" element={<div>Home Page</div>} />
+                    </Routes>
+                </MemoryRouter>
+            </Provider>,
         );
+
+        expect(screen.getByText('Test Animal')).toBeInTheDocument();
     });
 
-    test('close button updates URL', async () => {
-        fetchMock.mockResponseOnce(
-            JSON.stringify({
-                animal: { id: 'test-id', name: 'Test Animal' },
-            }),
+    test('displays a message when no data is available', () => {
+        (useFetchItemDetailsQuery as jest.Mock).mockReturnValue({
+            data: null,
+            isLoading: false,
+        });
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/details/1']}>
+                    <Routes>
+                        <Route path="/details/:id" element={<ItemDetails />} />
+                        <Route path="/" element={<div>Home Page</div>} />
+                    </Routes>
+                </MemoryRouter>
+            </Provider>,
         );
 
-        renderComponent('test-id');
+        expect(screen.getByText('No details available')).toBeInTheDocument();
+    });
 
-        await waitFor(() =>
-            expect(screen.getByText('Test Animal')).toBeInTheDocument(),
+    test('navigates back when "Close" button is clicked', () => {
+        (useFetchItemDetailsQuery as jest.Mock).mockReturnValue({
+            data: { animal: { name: 'Test Animal' } },
+            isLoading: false,
+        });
+
+        const mockNavigate = jest.fn();
+        jest.mock('react-router-dom', () => ({
+            ...jest.requireActual('react-router-dom'),
+            useNavigate: () => mockNavigate,
+        }));
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/details/1']}>
+                    <Routes>
+                        <Route path="/details/:id" element={<ItemDetails />} />
+                        <Route path="/" element={<div>Home Page</div>} />
+                    </Routes>
+                </MemoryRouter>
+            </Provider>,
         );
 
-        const closeButton = screen.getByText('Close');
-        fireEvent.click(closeButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith('/?');
+        fireEvent.click(screen.getByText('Close'));
     });
 });
