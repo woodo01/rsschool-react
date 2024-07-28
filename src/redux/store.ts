@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { api } from './apiSlice';
 import searchReducer from './searchSlice';
+import themeReducer from './themeSlice';
 
 const store = configureStore({
     reducer: {
         [api.reducerPath]: api.reducer,
         search: searchReducer,
+        theme: themeReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(api.middleware),

@@ -7,12 +7,14 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from './redux/searchSlice.ts';
 import { RootState } from './redux/store.ts';
+import ThemeSelector from './components/ThemeSelector/ThemeSelector.tsx';
 
 const App: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
     const { loading, error } = useSelector((state: RootState) => state.search);
+    const { theme } = useSelector((state: RootState) => state.theme);
 
     const handleMainPanelClick = () => {
         const params = new URLSearchParams(location.search);
@@ -26,7 +28,10 @@ const App: React.FC = () => {
     }
 
     return (
-        <section className="App">
+        <section className={`App ${theme}`}>
+            <div className="ThemeSelectorContainer">
+                <ThemeSelector />
+            </div>
             <div className="SearchBar">
                 <SearchBar />
                 <button
