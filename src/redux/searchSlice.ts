@@ -6,6 +6,7 @@ export interface SearchState {
     loading: boolean;
     totalPages: number;
     error: Error | null;
+    selectedItems: { [key: string]: SearchItem };
 }
 
 const initialState: SearchState = {
@@ -13,6 +14,7 @@ const initialState: SearchState = {
     loading: false,
     totalPages: 0,
     error: null,
+    selectedItems: {},
 };
 
 const searchSlice = createSlice({
@@ -31,9 +33,25 @@ const searchSlice = createSlice({
         setTotalPages: (state, action: PayloadAction<number>) => {
             state.totalPages = action.payload;
         },
+        toogleItemSelected: (state, action: PayloadAction<SearchItem>) => {
+            if (action.payload.uid in state.selectedItems) {
+                delete state.selectedItems[action.payload.uid];
+            } else {
+                state.selectedItems[action.payload.uid] = action.payload;
+            }
+        },
+        unselectAllItems: (state) => {
+            state.selectedItems = {};
+        },
     },
 });
 
-export const { setSearchItems, setError, setLoading, setTotalPages } =
-    searchSlice.actions;
+export const {
+    setSearchItems,
+    setError,
+    setLoading,
+    setTotalPages,
+    toogleItemSelected,
+    unselectAllItems,
+} = searchSlice.actions;
 export default searchSlice.reducer;
