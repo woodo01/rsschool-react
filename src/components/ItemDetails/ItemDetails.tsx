@@ -1,22 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { SearchItem } from '../../types/SearchResult';
 import Loader from '../Loader/Loader';
+import { useFetchItemDetailsQuery } from '../../redux/apiSlice.ts';
 
 const ItemDetails: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [details, setDetails] = useState<SearchItem | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        fetch(`https://stapi.co/api/v1/rest/animal/?uid=${id}`)
-            .then((response) => response.json())
-            .then((data) => {
-                setDetails(data.animal);
-                setLoading(false);
-            });
-    }, [id]);
+    const { data, isLoading } = useFetchItemDetailsQuery(id ?? '');
 
     const handleClose = () => {
         const params = new URLSearchParams(location.search);
@@ -26,10 +16,10 @@ const ItemDetails: React.FC = () => {
     return (
         <div className="ItemDetails" onClick={(e) => e.stopPropagation()}>
             Details
-            {loading ? (
+            {isLoading ? (
                 <Loader />
-            ) : details ? (
-                <div>{details.name}</div>
+            ) : data ? (
+                <div>{data.animal.name}</div>
             ) : (
                 <p>No details available</p>
             )}
