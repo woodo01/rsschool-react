@@ -1,63 +1,43 @@
 import React, { useEffect } from 'react';
-import { Props } from '../../types/SearchBar.ts';
 import useSearchQuery from '../../hooks/useSearchQuery.tsx';
-import { useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {
+    setError,
+    setLoading,
+    setSearchItems,
+    setTotalPages,
+} from '../../redux/searchSlice.ts';
+import { useLazyFetchItemsQuery } from '../../redux/apiSlice.ts';
 
-const SearchBar: React.FC<Props> = ({ onSearch, pageNumber }) => {
+const SearchBar: React.FC = () => {
     const [searchTerm, setSearchTerm] = useSearchQuery('searchTerm');
-    const location = useLocation();
+    const dispatch = useDispatch();
+    const [fetchItems, { data, error, isLoading }] = useLazyFetchItemsQuery();
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        pageNumber = Number(params.get('page')) - 1 || 0;
-        pageNumber = pageNumber < 0 ? 0 : pageNumber;
-        fetchItems(searchTerm);
-        fetchItems(searchTerm);
+        handleSearch();
     }, [location.search]);
+
+    useEffect(() => {
+        if (data) {
+            dispatch(setSearchItems(data.animals));
+            dispatch(setTotalPages(data.page.totalPages));
+        }
+        if (error) {
+            dispatch(setError(error as Error));
+        }
+        dispatch(setLoading(isLoading));
+    }, [data, error, isLoading, dispatch]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
 
     const handleSearch = () => {
-        const trimmedSearchTerm = searchTerm.trim();
-        fetchItems(trimmedSearchTerm);
-    };
-
-    const fetchItems = (searchTerm: string) => {
-        onSearch({ items: [], totalPages: 0, error: null, loading: true });
-        const url =
-            'https://stapi.co/api/v1/rest/animal/search?pageNumber=' +
-            pageNumber;
-        const body = new URLSearchParams();
-        if (searchTerm) {
-            body.append('name', searchTerm);
-        }
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: body.toString(),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                return response.json();
-            })
-            .then((data) =>
-                onSearch({
-                    items: data.animals,
-                    totalPages: data.page.totalPages,
-                    error: null,
-                    loading: false,
-                }),
-            )
-            .catch((error) =>
-                onSearch({ items: [], totalPages: 0, error, loading: false }),
-            );
+        const params = new URLSearchParams(location.search);
+        let pageNumber = Number(params.get('page')) - 1 || 0;
+        pageNumber = pageNumber < 0 ? 0 : pageNumber;
+        fetchItems({ searchTerm, pageNumber: pageNumber });
     };
 
     return (

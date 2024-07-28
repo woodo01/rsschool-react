@@ -1,29 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
-import { SearchItem } from './types/SearchResult.ts';
 import Loader from './components/Loader/Loader.tsx';
 import SearchResults from './components/SearchResults/SearchResults.tsx';
 import SearchBar from './components/SearchBar/SearchBar.tsx';
-import { State } from './types/App.ts';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import Pagination from './components/Pagination/Pagination.tsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { setError } from './redux/searchSlice.ts';
+import { RootState } from './redux/store.ts';
 
 const App: React.FC = () => {
-    const [items, setItems] = useState<SearchItem[]>([]);
-    const [totalPages, setTotalPages] = useState<number>(0);
-    const [error, setError] = useState<Error | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-
     const navigate = useNavigate();
     const location = useLocation();
-    const params = new URLSearchParams(location.search);
-    const currentPage = Number(params.get('page')) - 1 || 0;
-    const onSearch = (state: State) => {
-        setItems(state.items);
-        setTotalPages(state.totalPages);
-        setError(state.error);
-        setLoading(state.loading);
-    };
+    const dispatch = useDispatch();
+    const { loading, error } = useSelector((state: RootState) => state.search);
 
     const handleMainPanelClick = () => {
         const params = new URLSearchParams(location.search);
@@ -39,10 +28,10 @@ const App: React.FC = () => {
     return (
         <section className="App">
             <div className="SearchBar">
-                <SearchBar onSearch={onSearch} pageNumber={currentPage} />
+                <SearchBar />
                 <button
                     onClick={() => {
-                        setError(new Error());
+                        dispatch(setError(new Error()));
                     }}
                 >
                     Throw Error
@@ -55,14 +44,11 @@ const App: React.FC = () => {
                     ) : loading ? (
                         <Loader />
                     ) : (
-                        <SearchResults items={items} />
+                        <SearchResults />
                     )}
                 </div>
                 <Outlet />
             </div>
-            {!loading && items.length > 0 && (
-                <Pagination totalPages={totalPages} />
-            )}
         </section>
     );
 };
