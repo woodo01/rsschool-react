@@ -6,7 +6,7 @@ import { unselectAllItems } from '../../redux/searchSlice';
 import { convertToCSV } from '../../utils/csvUtils';
 
 jest.mock('../../redux/searchSlice', () => ({
-    ...jest.requireActual('../../redux/searchSlice'),
+    ...jest.requireActual('../../../components/redux/searchSlice'),
     unselectAllItems: jest.fn(),
 }));
 

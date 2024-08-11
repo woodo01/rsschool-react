@@ -1,5 +1,5 @@
 import React from 'react';
-import './Flyout.css';
+import styles from './Flyout.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { unselectAllItems } from '../../redux/searchSlice.ts';
 import { RootState } from '../../redux/store.ts';
@@ -29,7 +29,7 @@ const Flyout: React.FC = () => {
     };
 
     return (
-        <div className="Flyout">
+        <div className={styles.Flyout}>
             <p>{Object.keys(selectedItems).length} item(s) selected</p>
             <button onClick={handleUnselectAll}>Unselect all</button>
             <button onClick={handleDownload}>Download</button>

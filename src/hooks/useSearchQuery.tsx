@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react';
 
 const useSearchQuery = (key: string) => {
     const [query, setQuery] = useState<string>(() => {
-        // Get initial value from local storage
-        return localStorage.getItem(key) || '';
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem(key) || '';
+        }
+
+        return '';
     });
 
     useEffect(() => {
-        localStorage.setItem(key, query);
-        // Save query to local storage when unmounting
-        return () => {
+        if (typeof window !== 'undefined') {
             localStorage.setItem(key, query);
-        };
+            return () => {
+                localStorage.setItem(key, query);
+            };
+        }
     }, [key, query]);
 
     return [query, setQuery] as const;

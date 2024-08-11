@@ -1,0 +1,14 @@
+.ThemeSelectorContainer {
+    margin: 20px;
+}
+.ThemeSelector {
+    display: flex;
+    align-items: center;
+}
+.ThemeSelector label {
+    margin-right: 10px;
+}
+
+.ThemeSelector select {
+    padding: 5px;
+}

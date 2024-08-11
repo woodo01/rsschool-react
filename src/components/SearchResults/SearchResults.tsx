@@ -1,22 +1,24 @@
 import React from 'react';
 import { SearchItem } from '../../types/SearchResult';
-import { useNavigate } from 'react-router-dom';
 import Pagination from '../Pagination/Pagination.tsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store.ts';
 import { toogleItemSelected } from '../../redux/searchSlice.ts';
 import Flyout from '../Flyout/Flyout.tsx';
+import { useRouter } from 'next/router';
 
 const SearchResults: React.FC = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { items, loading, totalPages, selectedItems } = useSelector(
         (state: RootState) => state.search,
     );
+    const router = useRouter();
 
     const handleItemClick = (item: SearchItem) => {
-        const params = new URLSearchParams(location.search);
-        navigate(`details/${item.uid}/?${params.toString()}`);
+        router.push({
+            pathname: `/details/${item.uid}`,
+            query: { ...router.query },
+        });
     };
 
     const handleCheckboxChange = (item: SearchItem) => {

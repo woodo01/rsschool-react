@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { SearchItem } from '../types/SearchResult';
+import { SearchItem } from '../types/SearchResult.ts';
 
 export const api = createApi({
     reducerPath: 'api',

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { setTheme } from '../../redux/themeSlice';
-// import './ThemeSelector.css'; // Add appropriate styles for the theme selector
+import styles from './ThemeSelector.module.css';
 
 const ThemeSelector: React.FC = () => {
     const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const ThemeSelector: React.FC = () => {
     };
 
     return (
-        <div className="ThemeSelector">
+        <div className={styles.ThemeSelector}>
             <label htmlFor="theme-select">Select Theme:</label>
             <select
                 id="theme-select"

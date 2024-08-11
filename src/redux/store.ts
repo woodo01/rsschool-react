@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { api } from './apiSlice';
-import searchReducer from './searchSlice';
-import themeReducer from './themeSlice';
+import { api } from './apiSlice.ts';
+import searchReducer from './searchSlice.ts';
+import themeReducer from './themeSlice.ts';
 
 const store = configureStore({
     reducer: {

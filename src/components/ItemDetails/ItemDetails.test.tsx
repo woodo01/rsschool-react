@@ -6,7 +6,7 @@ import ItemDetails from './ItemDetails';
 import { useFetchItemDetailsQuery } from '../../redux/apiSlice';
 
 jest.mock('../../redux/apiSlice', () => ({
-    ...jest.requireActual('../../redux/apiSlice'),
+    ...jest.requireActual('../../../components/redux/apiSlice'),
     useFetchItemDetailsQuery: jest.fn(),
 }));
 

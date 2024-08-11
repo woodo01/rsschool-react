@@ -11,7 +11,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('../../redux/searchSlice', () => ({
-    ...jest.requireActual('../../redux/searchSlice'),
+    ...jest.requireActual('../../../components/redux/searchSlice'),
     toogleItemSelected: jest.fn(),
 }));
 

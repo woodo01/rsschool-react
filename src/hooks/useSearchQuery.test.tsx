@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import useSearchQuery from './useSearchQuery';
+import useSearchQuery from './useSearchQuery.tsx';
 
 describe('useSearchQuery', () => {
     beforeEach(() => {

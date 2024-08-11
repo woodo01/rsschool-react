@@ -1,25 +1,27 @@
 import React from 'react';
-import './App.css';
-import Loader from './components/Loader/Loader.tsx';
-import SearchResults from './components/SearchResults/SearchResults.tsx';
-import SearchBar from './components/SearchBar/SearchBar.tsx';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from './redux/searchSlice.ts';
 import { RootState } from './redux/store.ts';
 import ThemeSelector from './components/ThemeSelector/ThemeSelector.tsx';
+import SearchBar from './components/SearchBar/SearchBar.tsx';
+import Loader from './components/Loader/Loader.tsx';
+import SearchResults from './components/SearchResults/SearchResults.tsx';
+import { useRouter } from 'next/router';
 
 const App: React.FC = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
+    const { id, ...otherQueryParams } = router.query;
     const dispatch = useDispatch();
     const { loading, error } = useSelector((state: RootState) => state.search);
     const { theme } = useSelector((state: RootState) => state.theme);
 
     const handleMainPanelClick = () => {
-        const params = new URLSearchParams(location.search);
+        console.log(id);
         if (location.pathname.startsWith('/details')) {
-            navigate(`/?${params.toString()}`);
+            router.push({
+                pathname: `/`,
+                query: { ...otherQueryParams },
+            });
         }
     };
 
@@ -52,7 +54,6 @@ const App: React.FC = () => {
                         <SearchResults />
                     )}
                 </div>
-                <Outlet />
             </div>
         </section>
     );
