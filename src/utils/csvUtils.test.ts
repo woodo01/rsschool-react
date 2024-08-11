@@ -1,5 +1,5 @@
-import { convertToCSV } from './csvUtils';
-import { SearchItem } from '../types/SearchResult';
+import { convertToCSV } from './csvUtils.ts';
+import { SearchItem } from '../types/SearchResult.ts';
 
 describe('convertToCSV', () => {
     test('converts an empty array to CSV', () => {

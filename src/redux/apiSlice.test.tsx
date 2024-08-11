@@ -6,9 +6,9 @@ import {
     api,
     useLazyFetchItemsQuery,
     useFetchItemDetailsQuery,
-} from './apiSlice';
+} from './apiSlice.ts';
 
-jest.mock('./apiSlice', () => ({
+jest.mock('./apiSlice.ts', () => ({
     ...jest.requireActual('./apiSlice'),
     useLazyFetchItemsQuery: jest.fn(),
     useFetchItemDetailsQuery: jest.fn(),

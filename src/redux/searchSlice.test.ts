@@ -6,8 +6,8 @@ import searchReducer, {
     setTotalPages,
     toogleItemSelected,
     unselectAllItems,
-} from './searchSlice';
-import { SearchItem } from '../types/SearchResult';
+} from './searchSlice.ts';
+import { SearchItem } from '../types/SearchResult.ts';
 
 describe('searchSlice', () => {
     const initialState: SearchState = {

@@ -1,21 +1,19 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 interface PaginationProps {
     totalPages: number;
 }
 
 const Pagination: React.FC<PaginationProps> = ({ totalPages }) => {
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const params = new URLSearchParams(location.search);
-    const currentPage = Number(params.get('page')) || 1;
+    const router = useRouter();
+    const currentPage = Number(router.query.page) || 1;
 
     const handlePageChange = (page: number) => {
-        const params = new URLSearchParams(location.search);
-        params.set('page', page.toString());
-        navigate(`/?${params.toString()}`);
+        router.push({
+            pathname: router.pathname,
+            query: { ...router.query, page: page.toString() },
+        });
     };
 
     return (

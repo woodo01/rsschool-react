@@ -1,16 +1,18 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import Loader from '../Loader/Loader';
 import { useFetchItemDetailsQuery } from '../../redux/apiSlice.ts';
+import { useRouter } from 'next/router';
 
 const ItemDetails: React.FC = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { data, isLoading } = useFetchItemDetailsQuery(id ?? '');
+    const router = useRouter();
+    const { id, ...otherQueryParams } = router.query;
+    const { data, isLoading } = useFetchItemDetailsQuery(id as string);
 
     const handleClose = () => {
-        const params = new URLSearchParams(location.search);
-        navigate(`/?${params.toString()}`);
+        router.push({
+            pathname: `/`,
+            query: { ...otherQueryParams },
+        });
     };
 
     return (

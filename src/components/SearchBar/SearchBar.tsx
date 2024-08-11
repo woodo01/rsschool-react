@@ -8,20 +8,21 @@ import {
     setTotalPages,
 } from '../../redux/searchSlice.ts';
 import { useLazyFetchItemsQuery } from '../../redux/apiSlice.ts';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const SearchBar: React.FC = () => {
-    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useSearchQuery('searchTerm');
-    const dispatch = useDispatch();
     const [fetchItems, { data, error, isLoading }] = useLazyFetchItemsQuery();
+    const dispatch = useDispatch();
+    const router = useRouter();
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        let pageNumber = Number(params.get('page')) - 1 || 0;
-        pageNumber = pageNumber < 0 ? 0 : pageNumber;
-        fetchItems({ searchTerm, pageNumber: pageNumber });
-    }, [location.search]);
+        if (typeof window !== 'undefined') {
+            let pageNumber = Number(router.query['page']) - 1 || 0;
+            pageNumber = pageNumber < 0 ? 0 : pageNumber;
+            fetchItems({ searchTerm, pageNumber });
+        }
+    }, [router.query, searchTerm]);
 
     useEffect(() => {
         if (data) {
@@ -39,7 +40,7 @@ const SearchBar: React.FC = () => {
     };
 
     const handleSearch = () => {
-        navigate(`/`);
+        router.push(`/`);
         fetchItems({ searchTerm, pageNumber: 0 });
     };
 

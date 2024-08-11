@@ -1,4 +1,4 @@
-import { SearchItem } from '../types/SearchResult';
+import { SearchItem } from '../types/SearchResult.ts';
 
 export const convertToCSV = (items: SearchItem[]): string => {
     const headers = ['UID', 'Name'];

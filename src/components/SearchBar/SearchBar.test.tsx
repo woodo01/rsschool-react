@@ -12,7 +12,7 @@ import { useLazyFetchItemsQuery } from '../../redux/apiSlice';
 import useSearchQuery from '../../hooks/useSearchQuery';
 
 jest.mock('../../redux/apiSlice', () => ({
-    ...jest.requireActual('../../redux/apiSlice'),
+    ...jest.requireActual('../../../components/redux/apiSlice'),
     useLazyFetchItemsQuery: jest.fn(),
 }));
 
