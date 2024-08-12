@@ -4,7 +4,7 @@ import searchReducer, {
     setError,
     setLoading,
     setTotalPages,
-    toogleItemSelected,
+    toggleItemSelected,
     unselectAllItems,
 } from './searchSlice.ts';
 import { SearchItem } from '../types/SearchResult.ts';
@@ -55,7 +55,7 @@ describe('searchSlice', () => {
     test('should handle toogleItemSelected - select item', () => {
         const actual = searchReducer(
             initialState,
-            toogleItemSelected(sampleItem),
+            toggleItemSelected(sampleItem),
         );
         expect(actual.selectedItems).toEqual({ '1': sampleItem });
     });
@@ -67,7 +67,7 @@ describe('searchSlice', () => {
         };
         const actual = searchReducer(
             stateWithSelectedItem,
-            toogleItemSelected(sampleItem),
+            toggleItemSelected(sampleItem),
         );
         expect(actual.selectedItems).toEqual({});
     });

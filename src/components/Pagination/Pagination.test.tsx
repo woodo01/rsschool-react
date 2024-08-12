@@ -1,30 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Pagination from './Pagination';
+import mockRouter from 'next-router-mock';
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useNavigate: () => mockNavigate,
-    useLocation: () => ({
-        search: '',
-    }),
-}));
+jest.mock('next/router', () => require('next-router-mock'));
 
 describe('Pagination', () => {
     const totalPages = 5;
 
-    const renderComponent = (initialEntries = ['/']) => {
-        render(
-            <MemoryRouter initialEntries={initialEntries}>
-                <Routes>
-                    <Route
-                        path="/"
-                        element={<Pagination totalPages={totalPages} />}
-                    />
-                </Routes>
-            </MemoryRouter>,
-        );
+    const renderComponent = (initialPath = '/') => {
+        mockRouter.push(initialPath);
+        render(<Pagination totalPages={totalPages} />);
     };
 
     test('renders correct number of pagination buttons', () => {
@@ -34,9 +19,9 @@ describe('Pagination', () => {
     });
 
     test('disables button for current page', () => {
-        renderComponent(['/?page=3']);
+        renderComponent('/?page=3');
         const buttons = screen.getAllByRole('button');
-        expect(buttons[0]).toBeDisabled();
+        expect(buttons[2]).toBeDisabled();
     });
 
     test('calls navigate with correct URL on page change', () => {
@@ -44,14 +29,18 @@ describe('Pagination', () => {
         const buttons = screen.getAllByRole('button');
 
         fireEvent.click(buttons[2]);
-        expect(mockNavigate).toHaveBeenCalledWith('/?page=3');
+        expect(mockRouter).toMatchObject({
+            asPath: '/?page=3',
+        });
     });
 
     test('updates URL correctly when changing page', () => {
-        renderComponent(['/?page=1']);
+        renderComponent('/?page=1');
         const buttons = screen.getAllByRole('button');
 
         fireEvent.click(buttons[3]);
-        expect(mockNavigate).toHaveBeenCalledWith('/?page=4');
+        expect(mockRouter).toMatchObject({
+            asPath: '/?page=4',
+        });
     });
 });

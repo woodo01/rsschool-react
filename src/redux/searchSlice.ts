@@ -33,7 +33,7 @@ const searchSlice = createSlice({
         setTotalPages: (state, action: PayloadAction<number>) => {
             state.totalPages = action.payload;
         },
-        toogleItemSelected: (state, action: PayloadAction<SearchItem>) => {
+        toggleItemSelected: (state, action: PayloadAction<SearchItem>) => {
             if (action.payload.uid in state.selectedItems) {
                 delete state.selectedItems[action.payload.uid];
             } else {
@@ -51,7 +51,7 @@ export const {
     setError,
     setLoading,
     setTotalPages,
-    toogleItemSelected,
+    toggleItemSelected,
     unselectAllItems,
 } = searchSlice.actions;
 export default searchSlice.reducer;
