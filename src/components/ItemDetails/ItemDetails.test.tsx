@@ -1,16 +1,17 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import configureStore, { MockStore } from 'redux-mock-store';
 import ItemDetails from './ItemDetails';
 import { useFetchItemDetailsQuery } from '../../redux/apiSlice';
+import mockRouter from 'next-router-mock';
 
 jest.mock('../../redux/apiSlice', () => ({
-    ...jest.requireActual('../../../components/redux/apiSlice'),
+    ...jest.requireActual('../../redux/apiSlice'),
     useFetchItemDetailsQuery: jest.fn(),
 }));
 
 const mockStore = configureStore([]);
+jest.mock('next/router', () => require('next-router-mock'));
 
 describe('ItemDetails Component', () => {
     let store: MockStore;
@@ -28,12 +29,7 @@ describe('ItemDetails Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter initialEntries={['/details/1']}>
-                    <Routes>
-                        <Route path="/details/:id" element={<ItemDetails />} />
-                        <Route path="/" element={<div>Home Page</div>} />
-                    </Routes>
-                </MemoryRouter>
+                <ItemDetails />
             </Provider>,
         );
 
@@ -48,12 +44,7 @@ describe('ItemDetails Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter initialEntries={['/details/1']}>
-                    <Routes>
-                        <Route path="/details/:id" element={<ItemDetails />} />
-                        <Route path="/" element={<div>Home Page</div>} />
-                    </Routes>
-                </MemoryRouter>
+                <ItemDetails />
             </Provider>,
         );
 
@@ -68,12 +59,7 @@ describe('ItemDetails Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter initialEntries={['/details/1']}>
-                    <Routes>
-                        <Route path="/details/:id" element={<ItemDetails />} />
-                        <Route path="/" element={<div>Home Page</div>} />
-                    </Routes>
-                </MemoryRouter>
+                <ItemDetails />
             </Provider>,
         );
 
@@ -86,23 +72,15 @@ describe('ItemDetails Component', () => {
             isLoading: false,
         });
 
-        const mockNavigate = jest.fn();
-        jest.mock('react-router-dom', () => ({
-            ...jest.requireActual('react-router-dom'),
-            useNavigate: () => mockNavigate,
-        }));
-
         render(
             <Provider store={store}>
-                <MemoryRouter initialEntries={['/details/1']}>
-                    <Routes>
-                        <Route path="/details/:id" element={<ItemDetails />} />
-                        <Route path="/" element={<div>Home Page</div>} />
-                    </Routes>
-                </MemoryRouter>
+                <ItemDetails />
             </Provider>,
         );
 
         fireEvent.click(screen.getByText('Close'));
+        expect(mockRouter).toMatchObject({
+            asPath: '/',
+        });
     });
 });

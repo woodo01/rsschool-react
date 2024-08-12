@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore, { MockStore } from 'redux-mock-store';
-import { MemoryRouter, useNavigate } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import {
     setLoading,
@@ -10,21 +9,17 @@ import {
 } from '../../redux/searchSlice';
 import { useLazyFetchItemsQuery } from '../../redux/apiSlice';
 import useSearchQuery from '../../hooks/useSearchQuery';
+import mockRouter from 'next-router-mock';
 
 jest.mock('../../redux/apiSlice', () => ({
-    ...jest.requireActual('../../../components/redux/apiSlice'),
+    ...jest.requireActual('../../redux/apiSlice'),
     useLazyFetchItemsQuery: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useNavigate: jest.fn(),
-}));
-
+jest.mock('next/router', () => require('next-router-mock'));
 jest.mock('../../hooks/useSearchQuery');
 
 const mockStore = configureStore([]);
-const mockNavigate = jest.fn();
 
 describe('SearchBar Component', () => {
     let store: MockStore;
@@ -32,7 +27,6 @@ describe('SearchBar Component', () => {
     beforeEach(() => {
         store = mockStore({});
         store.dispatch = jest.fn();
-        (useNavigate as jest.Mock).mockImplementation(() => mockNavigate);
         (useSearchQuery as jest.Mock).mockReturnValue(['', jest.fn()]);
     });
 
@@ -46,9 +40,7 @@ describe('SearchBar Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter>
-                    <SearchBar />
-                </MemoryRouter>
+                <SearchBar />
             </Provider>,
         );
 
@@ -64,9 +56,7 @@ describe('SearchBar Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter>
-                    <SearchBar />
-                </MemoryRouter>
+                <SearchBar />
             </Provider>,
         );
 
@@ -85,9 +75,7 @@ describe('SearchBar Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter initialEntries={['/?page=1']}>
-                    <SearchBar />
-                </MemoryRouter>
+                <SearchBar />
             </Provider>,
         );
 
@@ -113,9 +101,7 @@ describe('SearchBar Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter>
-                    <SearchBar />
-                </MemoryRouter>
+                <SearchBar />
             </Provider>,
         );
 
@@ -136,14 +122,14 @@ describe('SearchBar Component', () => {
 
         render(
             <Provider store={store}>
-                <MemoryRouter>
-                    <SearchBar />
-                </MemoryRouter>
+                <SearchBar />
             </Provider>,
         );
 
         fireEvent.click(screen.getByRole('button', { name: /search/i }));
-        expect(mockNavigate).toHaveBeenCalledWith(`/`);
+        expect(mockRouter).toMatchObject({
+            asPath: '/',
+        });
         expect(fetchItems).toHaveBeenCalledWith({
             searchTerm: 'test',
             pageNumber: 0,

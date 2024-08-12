@@ -84,6 +84,7 @@
     "jest-fetch-mock": "^3.0.3",
     "lint-staged": "^15.2.7",
     "msw": "^2.3.4",
+    "next-router-mock": "^0.9.13",
     "prettier": "^3.3.2",
     "redux-mock-store": "^1.5.4",
     "ts-jest": "^29.2.2",

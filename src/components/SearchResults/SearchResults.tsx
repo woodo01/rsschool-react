@@ -3,7 +3,7 @@ import { SearchItem } from '../../types/SearchResult';
 import Pagination from '../Pagination/Pagination.tsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store.ts';
-import { toogleItemSelected } from '../../redux/searchSlice.ts';
+import { toggleItemSelected } from '../../redux/searchSlice.ts';
 import Flyout from '../Flyout/Flyout.tsx';
 import { useRouter } from 'next/router';
 
@@ -22,7 +22,7 @@ const SearchResults: React.FC = () => {
     };
 
     const handleCheckboxChange = (item: SearchItem) => {
-        dispatch(toogleItemSelected(item));
+        dispatch(toggleItemSelected(item));
     };
 
     const selectedItemsCount = Object.keys(selectedItems).length;
