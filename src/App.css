@@ -1,0 +1,100 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.highlight {
+  border: 2px solid #00f; /* Blue border */
+  background-color: #e0f7ff; /* Light blue background */
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.5s ease-in-out;
+}
+
+nav ul {
+  display: flex;
+  justify-content: flex-end;
+  column-gap: 25px;
+  list-style: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+  width: 780px;
+}
+
+form div {
+  display: flex;
+  justify-content: left;
+  column-gap: 10px;
+  text-align: start;
+  min-height: 50px;
+}
+
+form div label {
+  width: 150px;
+}
+
+form div input {
+  width: 200px;
+  height: 24px;
+}
+
+form div select {
+  width: 208px;
+}
+form div span {
+  width: 400px;
+  text-align: left;
+  color: red;
+}
+
+form div ul {
+  top: 15px;
+  position: absolute;
+  left: 160px;
+}
+
+.countries {
+  position: relative;
+}
